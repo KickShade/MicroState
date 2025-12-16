@@ -1,0 +1,16 @@
+# virtual env
+.venv/
+
+# python
+__pycache__/
+*.pyc
+
+# data
+data/raw/*
+data/processed/*
+
+# notebooks checkpoints
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
