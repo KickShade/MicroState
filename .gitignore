@@ -14,3 +14,6 @@ data/processed/*
 
 # OS
 .DS_Store
+
+# packaging artifacts
+*.egg-info/
