@@ -87,3 +87,6 @@ class OrderBook:
             "bids": list(self.bids.items()),
             "asks": list(self.asks.items()),
         }
+    def reset(self) -> None:
+        self.bids.clear()
+        self.asks.clear()
