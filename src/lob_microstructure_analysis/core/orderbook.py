@@ -1,6 +1,6 @@
 from sortedcontainers import SortedDict
 from typing import Dict, List, Optional, Tuple
-
+import heapq
 
 Price = float
 Quantity = float
@@ -28,12 +28,6 @@ class OrderBook:
         if side == "ask":
             return self.asks
         raise ValueError(f"Invalid side: {side}")
-    
-    def snapshot(self) -> dict:
-        return {
-        "bid": dict(self.bids),
-        "ask": dict(self.asks),
-    }
 
     def update_level(self, side: Side, price: Price, quantity: Quantity) -> None:
         """
@@ -88,11 +82,12 @@ class OrderBook:
             "asks": list(self.asks.items())[:n],
         }
 
-    def snapshot(self) -> Dict[str, List[Tuple[Price, Quantity]]]:
+    def snapshot(self) -> Dict[str, Dict[Price, Quantity]]:
         return {
-            "bids": list(self.bids.items()),
-            "asks": list(self.asks.items()),
-        }
+        "bid": dict(self.bids),
+        "ask": dict(self.asks),
+    }
+
     def reset(self) -> None:
         self.bids.clear()
         self.asks.clear()
