@@ -1,9 +1,14 @@
 from lob_microstructure_analysis.core.orderbook import OrderBook
 from lob_microstructure_analysis.ingestion.types import L2Update
+from lob_microstructure_analysis.core.event_inference import EventInferenceEngine
 
 
 class OrderBookProcessor:
     def __init__(self, orderbook: OrderBook) -> None:
+        
+        self.prev_snapshot = None
+        self.event_engine = EventInferenceEngine()
+
         self.orderbook = orderbook
         self.current_update_id = None
 
@@ -45,3 +50,17 @@ class OrderBookProcessor:
             f"[SNAPSHOT] Bid: {self.orderbook.best_bid()} | "
             f"Ask: {self.orderbook.best_ask()}"
         )
+        current_snapshot = self.orderbook.snapshot()
+        if self.prev_snapshot is not None:
+            events = self.event_engine.infer(
+                self.prev_snapshot,
+                current_snapshot,
+                rows[0].timestamp,
+            )
+            #print(f"[DEBUG] inferred {len(events)} events")
+
+
+            for e in events:
+                print("[EVENT]", e)
+
+        self.prev_snapshot = current_snapshot

@@ -28,6 +28,12 @@ class OrderBook:
         if side == "ask":
             return self.asks
         raise ValueError(f"Invalid side: {side}")
+    
+    def snapshot(self) -> dict:
+        return {
+        "bid": dict(self.bids),
+        "ask": dict(self.asks),
+    }
 
     def update_level(self, side: Side, price: Price, quantity: Quantity) -> None:
         """
