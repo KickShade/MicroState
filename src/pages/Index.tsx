@@ -1,8 +1,12 @@
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import AnimatedChartBackground from "@/components/AnimatedChartBackground";
 import { TrendingUp, BarChart3, Shield } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
+  const [hoveredButton, setHoveredButton] = useState<null | "signup" | "login">(null);
+  const navigate = useNavigate()
+
   return (
     <div className="relative min-h-screen bg-background">
       {/* Animated chart background */}
@@ -14,7 +18,7 @@ const Index = () => {
           {/* Badge */}
           <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-2 text-sm text-primary">
             <TrendingUp className="h-4 w-4" />
-            <span>Smart Trading Platform</span>
+            <span>Order Book Analytics Platform</span>
           </div>
           
           {/* Hero Title */}
@@ -26,8 +30,7 @@ const Index = () => {
           
           {/* Description */}
           <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl">
-            Empower your trading journey with real-time market insights, advanced analytics, 
-            and intelligent algorithms. Trade smarter, not harder.
+            Analyze real-time order book dynamics to understand liquidity, imbalance, and short-horizon market behavior.
           </p>
           
           {/* Feature pills */}
@@ -48,12 +51,34 @@ const Index = () => {
           
           {/* CTA Buttons */}
           <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Button variant="hero" size="xl">
+            <button
+              onMouseEnter={() => setHoveredButton("signup")}
+              onMouseLeave={() => setHoveredButton(null)}
+              style={{
+                backgroundColor: hoveredButton === "login" ? "hsl(160 84% 39%)" : hoveredButton === "signup" ? "transparent" : "hsl(160 84% 39%)",
+                color: hoveredButton === "login" ? "hsl(222 84% 5%)" : hoveredButton === "signup" ? "hsl(160 84% 39%)" : "hsl(222 84% 5%)",
+                borderColor: "hsl(160 84% 39%)",
+                transition: "all 300ms ease",
+              }}
+              onClick={() => navigate('/auth/signup')}
+              className="px-8 py-3 rounded-lg border-2 font-semibold text-lg"
+            >
               Sign Up
-            </Button>
-            <Button variant="hero-outline" size="xl">
+            </button>
+            <button
+              onMouseEnter={() => setHoveredButton("login")}
+              onMouseLeave={() => setHoveredButton(null)}
+              style={{
+                backgroundColor: hoveredButton === "signup" ? "hsl(160 84% 39%)" : hoveredButton === "login" ? "transparent" : "transparent",
+                color: hoveredButton === "signup" ? "hsl(222 84% 5%)" : hoveredButton === "login" ? "hsl(160 84% 39%)" : "hsl(160 84% 39%)",
+                borderColor: "hsl(160 84% 39%)",
+                transition: "all 300ms ease",
+              }}
+              onClick={() => navigate('/auth/login')}
+              className="px-8 py-3 rounded-lg border-2 font-semibold text-lg"
+            >
               Log In
-            </Button>
+            </button>
           </div>
           
           {/* Stats */}
