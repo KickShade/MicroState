@@ -6,8 +6,8 @@ __pycache__/
 *.pyc
 
 # data
-data/raw/*
-data/processed/*
+data/
+models/
 
 # notebooks checkpoints
 .ipynb_checkpoints/
@@ -17,3 +17,9 @@ data/processed/*
 
 # packaging artifacts
 *.egg-info/
+
+#notebooks
+*.ipynb
+
+#misc
+.env
