@@ -84,12 +84,12 @@ const Index = () => {
           {/* Stats */}
           <div className="mt-20 grid grid-cols-3 gap-8 border-t border-border/30 pt-10">
             <div className="text-center">
-              <div className="font-display text-3xl font-bold text-foreground sm:text-4xl">$2.4B+</div>
-              <div className="mt-1 text-sm text-muted-foreground">Trading Volume</div>
+              <div className="font-display text-3xl font-bold text-foreground sm:text-4xl">70%</div>
+              <div className="mt-1 text-sm text-muted-foreground">Accuracy</div>
             </div>
             <div className="text-center">
-              <div className="font-display text-3xl font-bold text-foreground sm:text-4xl">150K+</div>
-              <div className="mt-1 text-sm text-muted-foreground">Active Traders</div>
+              <div className="font-display text-3xl font-bold text-foreground sm:text-4xl">150+</div>
+              <div className="mt-1 text-sm text-muted-foreground">Active Users</div>
             </div>
             <div className="text-center">
               <div className="font-display text-3xl font-bold text-foreground sm:text-4xl">99.9%</div>

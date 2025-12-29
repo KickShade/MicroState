@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { Mail, Lock, User, ArrowRight } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
+import { useAuth } from "../context/AuthContext";
 
 export default function AuthPages({ initialMode = "login" }) {
+  const { login, signup, googleLogin } = useAuth();
   const [isSignUp, setIsSignUp] = useState(initialMode === "signup");
   const [hoveredButton, setHoveredButton] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -19,15 +23,34 @@ export default function AuthPages({ initialMode = "login" }) {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
+    setLoading(true);
+    setError("");
+
+    try {
+      if (isSignUp) {
+        signup(formData.name, formData.email, formData.password);
+      } else {
+        login(formData.email, formData.password);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Authentication failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleGoogleSuccess = (credentialResponse) => {
-    console.log("Google login successful:", credentialResponse);
-    // Send the token to your backend
-    // const token = credentialResponse.credential;
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setLoading(true);
+    setError("");
+    try {
+      googleLogin(credentialResponse.credential);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Google login failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -50,6 +73,13 @@ export default function AuthPages({ initialMode = "login" }) {
                 : "Sign in to your Microstate account"}
             </p>
           </div>
+
+          {/* Error Message */}
+          {error && (
+            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm">
+              {error}
+            </div>
+          )}
 
           {/* Form */}
           <div className="space-y-4 mb-6">
@@ -108,10 +138,20 @@ export default function AuthPages({ initialMode = "login" }) {
 
             <button
               onClick={handleSubmit}
-              className="w-full bg-teal-500 hover:bg-teal-600 text-slate-900 font-semibold py-2.5 rounded-lg transition flex items-center justify-center gap-2"
+              disabled={loading}
+              className="w-full bg-teal-500 hover:bg-teal-600 disabled:bg-teal-500/50 text-slate-900 font-semibold py-2.5 rounded-lg transition flex items-center justify-center gap-2"
             >
-              {isSignUp ? "Create Account" : "Sign In"}
-              <ArrowRight className="h-4 w-4" />
+              {loading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-slate-900 border-t-transparent rounded-full animate-spin"></div>
+                  Loading...
+                </>
+              ) : (
+                <>
+                  {isSignUp ? "Create Account" : "Sign In"}
+                  <ArrowRight className="h-4 w-4" />
+                </>
+              )}
             </button>
           </div>
 
@@ -121,7 +161,7 @@ export default function AuthPages({ initialMode = "login" }) {
             <div className="flex justify-center">
               <GoogleLogin
                 onSuccess={handleGoogleSuccess}
-                onError={() => console.log("Login Failed")}
+                onError={() => setError("Google login failed")}
                 theme="filled_black"
                 size="large"
               />
@@ -152,7 +192,10 @@ export default function AuthPages({ initialMode = "login" }) {
                   borderColor: "hsl(160 84% 39%)",
                   transition: "all 300ms ease",
                 }}
-                onClick={() => setIsSignUp(true)}
+                onClick={() => {
+                  setIsSignUp(true);
+                  setError("");
+                }}
                 className="px-14 py-3 rounded-lg border-2 font-semibold text-lg"
               >
                 Sign Up
@@ -176,7 +219,10 @@ export default function AuthPages({ initialMode = "login" }) {
                   borderColor: "hsl(160 84% 39%)",
                   transition: "all 300ms ease",
                 }}
-                onClick={() => setIsSignUp(false)}
+                onClick={() => {
+                  setIsSignUp(false);
+                  setError("");
+                }}
                 className="ml-3 px-14 py-3 rounded-lg border-2 font-semibold text-lg"
               >
                 Log In
