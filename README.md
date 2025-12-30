@@ -2,7 +2,7 @@
 ## Real-Time Market Microstructure Analytics & Prediction System
 
 > **MicroState (μState)** is a production-style, real-time system that reconstructs the Level-2 limit order book, computes event-driven microstructure features, and performs live machine-learning inference on streaming market data.
-
+> The system is designed to **separate instantaneous order-flow pressure from short-term price context**, enabling interpretable, multi-timescale market understanding.
 ---
 
 ## 🚀 Overview
@@ -11,7 +11,7 @@ Electronic markets operate at **microsecond timescales**, where price formation 
 
 **MicroState (μState)** models markets at the **microstructure level** by maintaining an in-memory market state and updating features and predictions **incrementally** as events arrive.
 
-This project is designed as a **streaming system**, not a notebook or static backtest.
+This project is designed as a **streaming system**, not a notebook or signal-only prototype.
 
 ---
 
@@ -21,24 +21,47 @@ This project is designed as a **streaming system**, not a notebook or static bac
 - ⚙️ **Event-driven market state management**
 - 📈 **Incremental microstructure feature extraction**
 - 🤖 **Online machine-learning inference**
-- 🔌 **FastAPI + WebSocket real-time streaming**
+- 🔌 **FastAPI + WebSocket real-time streaming (short horizon)**
+- 🧭 **Mid-term price context estimation (trend & uncertainty)**
+- 🧠 **Deterministic multi-signal interpretation layer**
 - 🔁 **Deterministic replay & evaluation**
 - 🐳 **Containerized deployment**
+
+---
+##🧠 System Design Philosophy
+
+- MicroState is built around a multi-timescale separation of concerns:
+
+| Component            | Timescale     | Purpose                                       |
+| -------------------- | ------------- | --------------------------------------------- |
+| Microstructure ML    | 1–5 seconds   | Detect instantaneous order-flow pressure      |
+| Price Context Model  | 15–30 minutes | Estimate short-term price drift & uncertainty |
+| Interpretation Layer | N/A           | Combine signals into human-meaningful context |
+
+
+- Models are not merged or ensembled.
+- Signals remain independent and are combined only at the interpretation layer to avoid horizon leakage and false confidence.
 
 ---
 
 ## 🧠 High-Level Architecture
 
 Market Data (Live / Replay)
-↓
+        ↓
 L2 Order Book Reconstruction
-↓
+        ↓
 Event-Driven Feature Engine
-↓
-Online ML Inference
-↓
+        ↓
+Microstructure ML Inference (1s horizon)
+        ↓
+Mid-Price Stream
+        ↓
+Price Context Model (15–30m horizon)
+        ↓
+Signal Aggregator (Interpretation Layer)
+        ↓
 FastAPI + WebSocket API
-↓
+        ↓
 Dashboards / Strategy Simulators / Clients
 
 
@@ -81,6 +104,7 @@ Features are computed **incrementally** and aligned with real-time constraints:
 - Top-N depth aggregation
 - Order book imbalance
 - Rolling volatility
+- Rolling mid-price returns
 - Event-conditioned statistics
 - Time-windowed dynamics
 
@@ -92,20 +116,36 @@ Features are computed **incrementally** and aligned with real-time constraints:
 
 ## 🤖 Machine Learning
 
-The ML pipeline focuses on **short-horizon price movement prediction**:
+Microstructure Model
+- Short-horizon supervised prediction (≈1s)
+- Labels derived from future mid-price movement
+- Models optimized for online inference
+- Predictions treated as pressure signals, not trades
 
-- Supervised labels derived from future mid-price movement
-- Baseline models (e.g., gradient-boosted trees)
-- Offline evaluation via deterministic replay
-- Models designed to be **online-inference compatible**
+Price Context Model
+- Trained on mid-price derived from L2 data
+- Estimates short-term trend direction and uncertainty
+- Used strictly for context, not execution
 
-> Predictions are treated as **signals**, not trades.
+Numerical price forecasts are intentionally downgraded into directional context.
+---
 
+##🧠 Signal Interpretation Layer
+The system includes a deterministic signal aggregation module that interprets alignment or conflict between signals:
+
+| Microstructure | Price Context | Interpretation               |
+| -------------- | ------------- | ---------------------------- |
+| UP             | BULLISH       | Strong bullish alignment     |
+| UP             | BEARISH       | Counter-trend buying (risky) |
+| DOWN           | BULLISH       | Pullback within uptrend      |
+| DOWN           | BEARISH       | Strong bearish alignment     |
+
+This layer converts model outputs into human-readable market meaning.
 ---
 
 ## ⚡ Real-Time API Layer
 
-MicroState exposes predictions through:
+MicroState exposes real-time state and intelligence via:
 
 - **FastAPI** for HTTP endpoints
 - **WebSockets** for real-time streaming inference
@@ -154,6 +194,8 @@ This ensures correctness under real-time and replayed streaming conditions.
 - Event-driven feature engine
 - ML foundation
 - Streaming inference engine
+- Multi-timescale price context model
+- Signal aggregation layer
 - FastAPI + WebSocket API
 
 ## 🚧 In Progress / Planned
