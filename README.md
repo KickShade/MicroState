@@ -142,6 +142,7 @@ The system includes a deterministic signal aggregation module that interprets al
 | DOWN           | BEARISH       | Strong bearish alignment     |
 
 This layer converts model outputs into human-readable market meaning.
+
 ---
 
 ## ⚡ Real-Time API Layer
