@@ -63,6 +63,30 @@ export default function Dashboard() {
     { time: '12:34:55.432', type: 'PREDICTION', desc: 'Model predicts UP (72% conf)' },
   ]);
 
+  const [microstructure1s] = useState({
+    bidAskSpread: '0.01 bp',
+    imbalanceRatio: '1.23',
+    topBidVolume: '125.3 BTC',
+    topAskVolume: '118.7 BTC',
+    lastUpdate: '12:34:56.234',
+  });
+
+  const [priceContext15m] = useState({
+    priceChange: '+0.42%',
+    highPrice: '43,450',
+    lowPrice: '43,100',
+    volatility: '0.023%',
+    trend: 'Uptrend',
+  });
+
+  const [combinedInterpretation] = useState({
+    signal: 'BULLISH',
+    strength: 'Strong',
+    confidence: '72%',
+    reasoning: 'Strong buy pressure with sustained uptrend',
+    recommendation: 'Watch for continuation',
+  });
+
   const handleLogout = () => {
     logout();
   };
@@ -229,11 +253,107 @@ export default function Dashboard() {
             </div>
           </div>
 
+          {/* New Analysis Cards Row */}
+          <div className="grid grid-cols-3 gap-4">
+            {/* Microstructure (1s) */}
+            <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6 backdrop-blur-sm">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-black">Microstructure</h3>
+                <span className="text-xs font-semibold text-cyan-400 bg-cyan-500/10 px-2 py-1 rounded">1s</span>
+              </div>
+              <div className="space-y-3">
+                <div className="flex justify-between items-start">
+                  <span className="text-slate-400 text-xs font-medium">Bid/Ask Spread</span>
+                  <span className="font-semibold text-teal-400 text-xs">{microstructure1s.bidAskSpread}</span>
+                </div>
+                <div className="flex justify-between items-start">
+                  <span className="text-slate-400 text-xs font-medium">Imbalance</span>
+                  <span className="font-semibold text-teal-400 text-xs">{microstructure1s.imbalanceRatio}</span>
+                </div>
+                <div className="flex justify-between items-start">
+                  <span className="text-slate-400 text-xs font-medium">Top Bid Vol</span>
+                  <span className="font-semibold text-teal-400 text-xs">{microstructure1s.topBidVolume}</span>
+                </div>
+                <div className="flex justify-between items-start">
+                  <span className="text-slate-400 text-xs font-medium">Top Ask Vol</span>
+                  <span className="font-semibold text-teal-400 text-xs">{microstructure1s.topAskVolume}</span>
+                </div>
+                <div className="text-slate-500 text-xs pt-2 font-medium border-t border-slate-700/30">
+                  Update: {microstructure1s.lastUpdate}
+                </div>
+              </div>
+            </div>
+
+            {/* Price Context (15m) */}
+            <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6 backdrop-blur-sm">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-black">Price Context</h3>
+                <span className="text-xs font-semibold text-purple-400 bg-purple-500/10 px-2 py-1 rounded">15m</span>
+              </div>
+              <div className="space-y-3">
+                <div className="flex justify-between items-start">
+                  <span className="text-slate-400 text-xs font-medium">Price Change</span>
+                  <span className="font-semibold text-green-400 text-xs">{priceContext15m.priceChange}</span>
+                </div>
+                <div className="flex justify-between items-start">
+                  <span className="text-slate-400 text-xs font-medium">24H High</span>
+                  <span className="font-semibold text-teal-400 text-xs">${priceContext15m.highPrice}</span>
+                </div>
+                <div className="flex justify-between items-start">
+                  <span className="text-slate-400 text-xs font-medium">24H Low</span>
+                  <span className="font-semibold text-orange-400 text-xs">${priceContext15m.lowPrice}</span>
+                </div>
+                <div className="flex justify-between items-start">
+                  <span className="text-slate-400 text-xs font-medium">Volatility</span>
+                  <span className="font-semibold text-slate-300 text-xs">{priceContext15m.volatility}</span>
+                </div>
+                <div className="text-teal-400 text-xs pt-2 font-semibold border-t border-slate-700/30">
+                  Trend: {priceContext15m.trend}
+                </div>
+              </div>
+            </div>
+
+            {/* Combined Interpretation */}
+            <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6 backdrop-blur-sm">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-black">Interpretation</h3>
+                <span className="text-xs font-semibold text-green-400 bg-green-500/10 px-2 py-1 rounded">AI</span>
+              </div>
+              <div className="space-y-3">
+                <div className="flex justify-between items-start">
+                  <span className="text-slate-400 text-xs font-medium">Signal</span>
+                  <span className={`font-semibold text-xs px-2 py-1 rounded ${
+                    combinedInterpretation.signal === 'BULLISH' 
+                      ? 'text-green-400 bg-green-500/10' 
+                      : 'text-red-400 bg-red-500/10'
+                  }`}>
+                    {combinedInterpretation.signal}
+                  </span>
+                </div>
+                <div className="flex justify-between items-start">
+                  <span className="text-slate-400 text-xs font-medium">Strength</span>
+                  <span className="font-semibold text-teal-400 text-xs">{combinedInterpretation.strength}</span>
+                </div>
+                <div className="flex justify-between items-start">
+                  <span className="text-slate-400 text-xs font-medium">Confidence</span>
+                  <span className="font-semibold text-cyan-400 text-xs">{combinedInterpretation.confidence}</span>
+                </div>
+                <div className="border-t border-slate-700/30 pt-2">
+                  <p className="text-slate-400 text-xs mb-2 font-medium">Reason:</p>
+                  <p className="text-slate-300 text-xs">{combinedInterpretation.reasoning}</p>
+                </div>
+                <div className="bg-teal-500/10 border border-teal-500/30 rounded-lg p-2">
+                  <p className="text-teal-400 text-xs font-semibold">{combinedInterpretation.recommendation}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Bottom Row - 3 Sections */}
           <div className="grid grid-cols-3 gap-4">
             {/* Microstructure Features */}
             <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6 backdrop-blur-sm">
-              <h3 className="text-lg font-black mb-4">Microstructure</h3>
+              <h3 className="text-lg font-black mb-4">Liquidity Profile</h3>
               <div className="space-y-3">
                 {features.map((feature, i) => (
                   <div key={i} className="flex justify-between items-center py-2 border-b border-slate-700/30">
