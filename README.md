@@ -28,7 +28,7 @@ This project is designed as a **streaming system**, not a notebook or signal-onl
 - 🐳 **Containerized deployment**
 
 ---
-##🧠 System Design Philosophy
+## 🧠 System Design Philosophy
 
 - MicroState is built around a multi-timescale separation of concerns:
 
@@ -130,7 +130,7 @@ Price Context Model
 Numerical price forecasts are intentionally downgraded into directional context.
 ---
 
-##🧠 Signal Interpretation Layer
+## 🧠 Signal Interpretation Layer
 The system includes a deterministic signal aggregation module that interprets alignment or conflict between signals:
 
 | Microstructure | Price Context | Interpretation               |
