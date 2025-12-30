@@ -27,6 +27,8 @@ from lob_microstructure_analysis.api.models import (
     PriceLevel
 )
 from lob_microstructure_analysis.core.orderbook import OrderBook
+from lob_microstructure_analysis.ml.price_prophet import ProphetPricePredictor
+from lob_microstructure_analysis.ml.signal_aggregator import aggregate_signals
 
 
 
@@ -36,6 +38,7 @@ class AppState:
     def __init__(self):
         self.processor = None
         self.predictor = None
+        self.price_predictor = None
         self.ws_manager = WebSocketManager()
         self.data_source = None
         self.is_running = False
@@ -69,7 +72,15 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         print(f"⚠️  Could not load model: {e}")
         app_state.predictor = None
-    
+
+    # Load Prophet price context model
+    try:
+        app_state.price_predictor = ProphetPricePredictor()
+        print("✅ Prophet price context model loaded")
+    except Exception as e:
+        print(f"⚠️  Could not load Prophet model: {e}")
+        app_state.price_predictor = None
+
     # Initialize empty order book
     orderbook = OrderBook()
 
@@ -249,6 +260,53 @@ async def root():
         "name": "LOB Microstructure API",
         "version": "1.0.0",
         "status": "running" if app_state.is_running else "stopped"
+    }
+
+@app.get("/prediction/price")
+async def get_price_context(minutes_ahead: int = 15):
+    """
+    Get mid-term price context from Prophet.
+    """
+    if app_state.price_predictor is None:
+        raise HTTPException(status_code=503, detail="Price context model not available")
+
+    return app_state.price_predictor.predict(minutes_ahead)
+
+@app.get("/prediction/combined")
+async def get_combined_prediction(minutes_ahead: int = 15):
+    """
+    Combine microstructure signal with price context.
+    """
+    if app_state.latest_prediction is None:
+        raise HTTPException(status_code=503, detail="No microstructure prediction yet")
+
+    if app_state.price_predictor is None:
+        raise HTTPException(status_code=503, detail="Price context model not available")
+
+    # Microstructure output (already exists)
+    micro = app_state.latest_prediction
+
+    micro_signal = micro.prediction_label  # "UP" / "DOWN" / "FLAT"
+    micro_confidence = micro.confidence
+
+    # Prophet price context
+    price_ctx = app_state.price_predictor.predict(minutes_ahead)
+
+    # Aggregate
+    combined = aggregate_signals(
+        micro_signal=micro_signal,
+        price_trend=price_ctx["trend"],
+        micro_confidence=micro_confidence
+    )
+
+    return {
+        "microstructure": {
+            "signal": micro_signal,
+            "confidence": micro_confidence,
+            "horizon_ms": micro.horizon_ms
+        },
+        "price_context": price_ctx,
+        "combined": combined
     }
 
 
