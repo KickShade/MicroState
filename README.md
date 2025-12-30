@@ -128,6 +128,7 @@ Price Context Model
 - Used strictly for context, not execution
 
 Numerical price forecasts are intentionally downgraded into directional context.
+
 ---
 
 ## 🧠 Signal Interpretation Layer
