@@ -23,18 +23,36 @@ export default function AuthPages({ initialMode = "login" }) {
     }));
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+  //   setError("");
+
+  //   try {
+  //     if (isSignUp) {
+  //       signup(formData.name, formData.email, formData.password);
+  //     } else {
+  //       login(formData.email, formData.password);
+  //     }
+  //   } catch (err) {
+  //     setError(err instanceof Error ? err.message : "Authentication failed");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
+    setError(""); // reset previous errors
 
     try {
       if (isSignUp) {
-        signup(formData.name, formData.email, formData.password);
+        await signup(formData.name, formData.email, formData.password); // ✅ await
       } else {
-        login(formData.email, formData.password);
+        await login(formData.email, formData.password); // ✅ await
       }
     } catch (err) {
+      // err.message comes from the backend response via authcontext
       setError(err instanceof Error ? err.message : "Authentication failed");
     } finally {
       setLoading(false);
