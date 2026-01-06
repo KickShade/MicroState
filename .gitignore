@@ -1,32 +1,50 @@
-# virtual env
+# =========================
+# Virtual environment
+# =========================
 .venv/
 
-# python
+# =========================
+# Python
+# =========================
 __pycache__/
 *.pyc
 
-# data
+# =========================
+# Data (never tracked)
+# =========================
 data/
-# Ignore experimental models
+
+# =========================
+# Models
+# =========================
+# Ignore all models by default
 models/**
 
-# Allow runtime baseline models
-!models/*.txt
-!models/*.pkl
-!models/price_prediction/**
+# Allow production-ready models only
+!models/*.txt                 # LightGBM text models
+!models/*.pkl                 # Serialized baseline models
 
+# Allow Prophet price context model
+!models/price_prediction/
+!models/price_prediction/prophet_midprice_15m.pkl
 
-# notebooks checkpoints
+# =========================
+# Jupyter
+# =========================
 .ipynb_checkpoints/
-
-# OS
-.DS_Store
-
-# packaging artifacts
-*.egg-info/
-
-#notebooks
 *.ipynb
 
-#misc
+# =========================
+# OS / system
+# =========================
+.DS_Store
+
+# =========================
+# Packaging
+# =========================
+*.egg-info/
+
+# =========================
+# Environment / secrets
+# =========================
 .env
