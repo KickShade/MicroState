@@ -7,7 +7,14 @@ __pycache__/
 
 # data
 data/
-models/
+# Ignore experimental models
+models/**
+
+# Allow runtime baseline models
+!models/*.txt
+!models/*.pkl
+!models/price_prediction/**
+
 
 # notebooks checkpoints
 .ipynb_checkpoints/
