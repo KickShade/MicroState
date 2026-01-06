@@ -1,0 +1,30 @@
+# version: "3.9"
+
+# services:
+#   backend:
+#     build: .
+#     container_name: lob-backend
+#     ports:
+#       - "8000:8000"
+
+version: "3.9"
+
+services:
+  backend:
+    build: .
+    container_name: lob-backend
+    ports:
+      - "8000:8000"
+
+    environment:
+      MODE: replay # replay | live
+      CONFIG_PATH: /app/config/config.yaml
+      MODEL_PATH: /app/models
+      API_HOST: 0.0.0.0
+      API_PORT: 8000
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
