@@ -87,6 +87,13 @@ class OrderBook:
         "bid": dict(self.bids),
         "ask": dict(self.asks),
     }
+    def midprice(self) -> Optional[float]:
+        bid = self.best_bid()
+        ask = self.best_ask()
+        if bid is None or ask is None:
+            return None
+        return (bid + ask) / 2
+
 
     def reset(self) -> None:
         self.bids.clear()

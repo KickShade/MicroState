@@ -10,6 +10,8 @@ from lob_microstructure_analysis.core.event_inference import EventInferenceEngin
 from lob_microstructure_analysis.core.features import FeatureComputer
 from lob_microstructure_analysis.ml.labeling import LabelGenerator
 from lob_microstructure_analysis.ml.feature_store import FeatureStore
+from lob_microstructure_analysis.context.price_context import PriceContextEngine
+from pathlib import Path
 
 log = structlog.get_logger()
 
@@ -57,6 +59,12 @@ class OrderBookProcessor:
         # --- Stats ---
         self.updates_processed = 0
         self.snapshots_emitted = 0
+
+        # --- Price context (Prophet) ---
+        self.price_context = PriceContextEngine(
+            model_path=Path("models/price_prediction/prophet_midprice_15m.pkl")
+)
+
 
         log.info(
             "processor_initialized",
@@ -152,6 +160,8 @@ class OrderBookProcessor:
         mid_price = features.get("mid_price")
         if mid_price is None:
             return
+        # --- Price context update (1-min rolling) ---
+        self.price_context.maybe_update(mid_price, snapshot_ts_ms)
 
         # --- Phase 5: Labeling ---
         self.label_generator.add_observation(snapshot_ts_ms, mid_price)
