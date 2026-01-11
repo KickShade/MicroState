@@ -147,34 +147,30 @@ export default function ForgotPassword() {
     setLoading(true);
 
     try {
-      // 1️⃣ Check auth.user list
-      const { data: userList, error: listError } =
-        await supabase.auth.admin.listUsers();
+      // 🔍 Step 1 — Check if email exists in auth.users
+      const { data, error: listError } = await supabase.auth.admin.listUsers();
 
       if (listError) {
-        toast.error("Server error checking users");
+        toast.error("Server error checking users ❌");
         setLoading(false);
         return;
       }
 
-      const exists = userList.users.find((u) => u.email === email);
+      const userExists = data.users.some((u) => u.email === email);
 
-      if (!exists) {
+      if (!userExists) {
         toast.error("Email not registered ❌");
         setLoading(false);
         return;
       }
 
-      // 2️⃣ Send reset link
+      // ✉️ Step 2 — Send reset email
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/auth/reset-password`,
       });
 
-      if (error) {
-        toast.error(error.message);
-      } else {
-        toast.success("Reset link sent ✉️ Check your inbox!");
-      }
+      if (error) toast.error(error.message);
+      else toast.success("Reset email sent 📩 Check your inbox!");
     } catch (err: any) {
       toast.error(err.message);
     }
@@ -200,10 +196,7 @@ export default function ForgotPassword() {
             required
           />
 
-          <button
-            className="w-full bg-teal-500 py-2 rounded font-bold"
-            disabled={loading}
-          >
+          <button className="w-full bg-teal-500 py-2 rounded font-bold">
             {loading ? "Sending..." : "Send Reset Link"}
           </button>
         </form>
