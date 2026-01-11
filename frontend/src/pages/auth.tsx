@@ -283,7 +283,7 @@ import {
   EyeOff,
 } from "lucide-react";
 import { useState } from "react";
-import { supabase } from "../../lib/supabaseClient";
+import { supabase } from "../lib/supabaseClient";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
