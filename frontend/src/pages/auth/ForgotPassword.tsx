@@ -222,7 +222,7 @@ export default function ForgotPassword() {
         error.message.toLowerCase().includes("registered") ||
         error.message.toLowerCase().includes("found")
       ) {
-        toast.error("Email not registered ❌");
+        toast.error("Email not registered ");
       } else {
         toast.error(error.message);
       }
