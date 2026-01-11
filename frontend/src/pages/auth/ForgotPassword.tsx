@@ -125,79 +125,6 @@
 //   );
 // }
 
-// import { useState } from "react";
-// import { supabase } from "../../lib/supabaseClient";
-// import { toast } from "sonner";
-
-// export default function ForgotPassword() {
-//   const [email, setEmail] = useState("");
-//   const [loading, setLoading] = useState(false);
-
-//   const handleSubmit = async (e: any) => {
-//     e.preventDefault();
-//     setLoading(true);
-
-//     // Step 1 → Check if email exists in Supabase auth users table
-//     const { data: users, error: lookupErr } = await supabase
-//       .from("profiles")
-//       .select("id")
-//       .eq("email", email)
-//       .maybeSingle();
-
-//     if (lookupErr) {
-//       toast.error("Server error checking user ❌");
-//       setLoading(false);
-//       return;
-//     }
-
-//     if (!users) {
-//       toast.error("Email not registered ❌");
-//       setLoading(false);
-//       return;
-//     }
-
-//     // Step 2 → Send reset email
-//     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-//       redirectTo: `${window.location.origin}/auth/reset-password`,
-//     });
-
-//     setLoading(false);
-
-//     if (error) {
-//       toast.error(error.message);
-//       return;
-//     }
-
-//     toast.success("Password reset email sent 🎉\nCheck your inbox");
-//   };
-
-//   return (
-//     <div className="min-h-screen flex items-center justify-center">
-//       <div className="bg-slate-800 p-8 rounded-xl text-white w-80 space-y-4">
-//         <h2 className="text-xl font-bold">Forgot Password</h2>
-//         <p className="text-sm text-slate-300">
-//           Enter your email to receive reset link.
-//         </p>
-
-//         <form onSubmit={handleSubmit} className="space-y-4">
-//           <input
-//             className="w-full px-3 py-2 rounded bg-slate-700"
-//             placeholder="Email address"
-//             type="email"
-//             value={email}
-//             onChange={(e) => setEmail(e.target.value)}
-//             required
-//           />
-
-//           <button className="w-full bg-teal-500 py-2 rounded font-bold">
-//             {loading ? "Sending..." : "Send Reset Link"}
-//           </button>
-//         </form>
-//       </div>
-//     </div>
-//   );
-// }
-
 import { useState } from "react";
 import { supabase } from "../../lib/supabaseClient";
 import { toast } from "sonner";
@@ -210,20 +137,26 @@ export default function ForgotPassword() {
     e.preventDefault();
     setLoading(true);
 
-    // Check email exists
-    const { data, error: checkError } = await supabase
+    // Step 1 → Check if email exists in Supabase auth users table
+    const { data: users, error: lookupErr } = await supabase
       .from("profiles")
       .select("id")
       .eq("email", email)
       .maybeSingle();
 
-    if (!data) {
+    if (lookupErr) {
+      toast.error("Server error checking user ❌");
       setLoading(false);
-      toast.error("Email not registered ");
       return;
     }
 
-    // Send reset link
+    if (!users) {
+      toast.error("Email not registered ❌");
+      setLoading(false);
+      return;
+    }
+
+    // Step 2 → Send reset email
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/auth/reset-password`,
     });
@@ -231,11 +164,11 @@ export default function ForgotPassword() {
     setLoading(false);
 
     if (error) {
-      toast.error("Failed to send reset email");
+      toast.error(error.message);
       return;
     }
 
-    toast.success("Password reset link sent 🎉 Check your inbox");
+    toast.success("Password reset email sent 🎉\nCheck your inbox");
   };
 
   return (
@@ -256,11 +189,7 @@ export default function ForgotPassword() {
             required
           />
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-teal-500 py-2 rounded font-bold"
-          >
+          <button className="w-full bg-teal-500 py-2 rounded font-bold">
             {loading ? "Sending..." : "Send Reset Link"}
           </button>
         </form>
