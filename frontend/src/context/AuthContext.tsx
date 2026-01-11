@@ -123,7 +123,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (error) {
       setLoading(false);
-      toast.error("Incorrect email or password ❌");
+      toast.error("Incorrect email or password");
       throw new Error(error.message);
     }
 
