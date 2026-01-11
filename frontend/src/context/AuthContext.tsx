@@ -59,6 +59,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => listener.subscription.unsubscribe();
   }, []);
 
+  // const signup = async (name: string, email: string, password: string) => {
+  //   setLoading(true);
+  //   const { data, error } = await supabase.auth.signUp({
+  //     email,
+  //     password,
+  //     options: { data: { name } },
+  //   });
+
+  //   if (error) {
+  //     setLoading(false);
+  //     toast.error(error.message);
+  //     throw new Error(error.message);
+  //   }
+
+  //   if (data.user) {
+  //     await supabase.from("profiles").insert({
+  //       id: data.user.id,
+  //       name,
+  //     });
+  //     toast.success(
+  //       "Signup successful \nCheck your inbox to verify your email."
+  //     );
+  //   }
+
+  //   setLoading(false);
+  //   navigate("/auth/login");
+  // };
+
   const signup = async (name: string, email: string, password: string) => {
     setLoading(true);
     const { data, error } = await supabase.auth.signUp({
@@ -77,10 +105,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await supabase.from("profiles").insert({
         id: data.user.id,
         name,
+        email, // 👈 ADD THIS
       });
-      toast.success(
-        "Signup successful \nCheck your inbox to verify your email."
-      );
+      toast.success("Signup successful \nCheck your inbox for verification!");
     }
 
     setLoading(false);
