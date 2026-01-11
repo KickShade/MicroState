@@ -76,35 +76,26 @@ export default function ForgotPassword() {
     e.preventDefault();
     setLoading(true);
 
-    try {
-      // 🔍 Step 1 — check if email exists
-      const { data, error: userError } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("email", email)
-        .maybeSingle();
-
-      if (!data) {
-        setLoading(false);
-        toast.error("Email not registered");
-        return;
-      }
-
-      // ✉ Step 2 — send reset email
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/reset-password`,
-      });
-
-      if (error) {
-        toast.error(error.message);
-      } else {
-        toast.success("Password reset email sent 📩 Check your inbox");
-      }
-    } catch (err: any) {
-      toast.error(err.message);
-    }
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/reset-password`,
+    });
 
     setLoading(false);
+
+    if (error) {
+      // Supabase returns this when the account does not exist
+      if (
+        error.message.includes("not") ||
+        error.message.toLowerCase().includes("found")
+      ) {
+        toast.error("Email not registered ");
+      } else {
+        toast.error(error.message);
+      }
+      return;
+    }
+
+    toast.success("Password reset email sent.\nCheck your inbox");
   };
 
   return (
