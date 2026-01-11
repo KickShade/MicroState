@@ -210,6 +210,20 @@ export default function ForgotPassword() {
     e.preventDefault();
     setLoading(true);
 
+    // Check email exists
+    const { data, error: checkError } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("email", email)
+      .maybeSingle();
+
+    if (!data) {
+      setLoading(false);
+      toast.error("Email not registered ");
+      return;
+    }
+
+    // Send reset link
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/auth/reset-password`,
     });
@@ -217,19 +231,11 @@ export default function ForgotPassword() {
     setLoading(false);
 
     if (error) {
-      if (
-        error.message.toLowerCase().includes("exist") ||
-        error.message.toLowerCase().includes("registered") ||
-        error.message.toLowerCase().includes("found")
-      ) {
-        toast.error("Email not registered ");
-      } else {
-        toast.error(error.message);
-      }
+      toast.error("Failed to send reset email");
       return;
     }
 
-    toast.success("Password reset sent ✉️ Check your email!");
+    toast.success("Password reset link sent 🎉 Check your inbox");
   };
 
   return (
