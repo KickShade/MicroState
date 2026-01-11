@@ -178,7 +178,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Sync user on refresh
+  // Sync session on refresh
   useEffect(() => {
     const sync = async () => {
       const { data } = await supabase.auth.getUser();
@@ -193,22 +193,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     sync();
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_, session) => {
-      if (session?.user) {
-        setUser({
-          id: session.user.id,
-          email: session.user.email ?? "",
-          name: session.user.user_metadata?.name,
-        });
-      } else {
-        setUser(null);
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      async (_, session) => {
+        if (session?.user) {
+          setUser({
+            id: session.user.id,
+            email: session.user.email ?? "",
+            name: session.user.user_metadata?.name,
+          });
+        } else {
+          setUser(null);
+        }
       }
-    });
+    );
 
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  // SIGN UP
+  /* ---------------- SIGNUP ---------------- */
   const signup = async (name: string, email: string, password: string) => {
     setLoading(true);
 
@@ -221,7 +223,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (error) {
       setLoading(false);
       toast.error(error.message);
-      throw error;
+      throw new Error(error.message);
     }
 
     if (data.user) {
@@ -231,18 +233,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email,
       });
 
-      toast.success("Signup successful 🎉\nVerify your email to continue");
+      toast.success("Signup successful 🎉\nCheck your inbox!");
     }
 
     setLoading(false);
     navigate("/auth/login");
   };
 
-  // LOGIN
+  /* ---------------- LOGIN ---------------- */
   const login = async (email: string, password: string) => {
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -250,17 +252,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (error) {
       setLoading(false);
       toast.error("Incorrect email or password ❌");
-      throw error;
+      throw new Error(error.message);
     }
 
-    toast.success(`Logged in 👋 Welcome back!`);
+    toast.success(`Welcome back 👋`);
     setLoading(false);
     navigate("/dashboard");
   };
 
-  // GOOGLE LOGIN
+  /* ---------------- GOOGLE LOGIN ---------------- */
   const googleLogin = async () => {
     setLoading(true);
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo: `${window.location.origin}/dashboard` },
@@ -269,17 +272,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (error) {
       setLoading(false);
       toast.error(error.message);
-      throw error;
+      throw new Error(error.message);
     }
 
-    toast.info("Logged in with Google 🌐 Redirecting...");
+    toast.success("Logging in with Google...");
   };
 
-  // LOGOUT
+  /* ---------------- LOGOUT ---------------- */
   const logout = async () => {
     setLoading(true);
     await supabase.auth.signOut();
-    toast.success("Logged out 👋\nSee you soon!");
+    setUser(null);
+
+    toast.success("You have been logged out 👋");
     setLoading(false);
     navigate("/auth/login");
   };
