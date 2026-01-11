@@ -79,6 +79,7 @@ import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
+import AuthCallback from "./pages/AuthCallBack";
 
 const queryClient = new QueryClient();
 
@@ -107,6 +108,10 @@ const App = () => (
                 <Route
                   path="/auth/reset-password"
                   element={<ResetPassword />}
+                />
+                <Route 
+                path="/auth/callback" 
+                element={<AuthCallback />} 
                 />
                 <Route
                   path="/dashboard"

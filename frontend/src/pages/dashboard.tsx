@@ -71,7 +71,7 @@ export default function Dashboard() {
   /* ---------------- LOGOUT ---------------- */
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    navigate("/auth/login");
+    navigate("/");
   };
 
   /* ---------------- ML FETCH LOOP ---------------- */
@@ -212,7 +212,7 @@ export default function Dashboard() {
             type: predLabel !== "-" ? "PREDICT" : "TICK",
             desc:
               predLabel !== "-"
-                ? `${predLabel} (${(predRes.confidence * 100).toFixed(1)}%)`
+                ? `${predLabel} (${((predRes?.confidence ?? 0) * 100).toFixed(1)}%)`
                 : `Mid ${mid}`,
           },
           ...prev.slice(0, 40),
@@ -293,11 +293,11 @@ export default function Dashboard() {
             >
               <div className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-700/30 transition">
                 <div className="w-9 h-9 rounded-full bg-gradient-to-br from-teal-400 to-cyan-400 flex items-center justify-center font-bold text-xs text-slate-900 flex-shrink-0">
-                  {user?.name?.[0] || "U"}
+                  {user?.user_metadata?.name?.[0] || "U"}
                 </div>
                 <div className="flex-1 min-w-0 text-left">
                   <p className="text-xs font-semibold text-white truncate leading-tight">
-                    {user?.name}
+                    {user?.user_metadata?.name || "User"}
                   </p>
                   <p className="text-xs text-slate-400 truncate leading-tight">
                     {user?.email}
@@ -422,11 +422,11 @@ function Sidebar({ user, showUserMenu, setShowUserMenu, handleLogout }) {
           >
             <div className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-700/30 transition">
               <div className="w-9 h-9 rounded-full bg-gradient-to-br from-teal-400 to-cyan-400 flex items-center justify-center font-bold text-xs text-slate-900 flex-shrink-0">
-                {user?.name?.[0] || "U"}
+                {user?.user_metadata?.name?.[0] || "U"}
               </div>
               <div className="flex-1 min-w-0 text-left">
                 <p className="text-xs font-semibold text-white truncate leading-tight">
-                  {user?.name}
+                  {user?.user_metadata?.name || "User"}
                 </p>
                 <p className="text-xs text-slate-400 truncate leading-tight">
                   {user?.email}
