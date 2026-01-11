@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Mail, Lock, User, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
+import { toast } from "sonner";
 
 export default function AuthPages({ initialMode = "login" }) {
   const [isSignUp, setIsSignUp] = useState(initialMode === "signup");
@@ -67,17 +68,27 @@ export default function AuthPages({ initialMode = "login" }) {
             name: formData.name,
           });
 
-          setError("Signup successful — please check your email ✓");
-          setIsSignUp(false);
           resetOnToggle();
+          setIsSignUp(false);
+
+          toast.success(
+            "Signup successful. Check your inbox/spam to verify your email."
+          );
         }
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await supabase.auth.signInWithPassword({
           email: formData.email,
           password: formData.password,
         });
 
         if (error) throw error;
+
+        const user = data.user;
+        const name =
+          user?.user_metadata?.name || user?.email?.split("@")[0] || "User";
+
+        toast.success(`Logged in ${user.email} \n Welcome, ${name}!`);
+
         navigate("/dashboard");
       }
     } catch (err: any) {
@@ -88,21 +99,21 @@ export default function AuthPages({ initialMode = "login" }) {
   };
 
   const handleGoogleAuth = async () => {
-  setLoading(true);
-  setError("");
+    setLoading(true);
+    setError("");
 
-  try {
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
-  } catch (err: any) {
-    setError(err.message || "Google login failed");
-    setLoading(false);
-  }
-};
+    try {
+      await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+    } catch (err: any) {
+      setError(err.message || "Google login failed");
+      setLoading(false);
+    }
+  };
 
   return (
     <div
@@ -136,11 +147,13 @@ export default function AuthPages({ initialMode = "login" }) {
 
           {/* ERROR BANNER */}
           {error && (
-            <div className={`mb-4 p-3 rounded-lg text-sm border ${
-              error.includes("successful") 
-                ? "bg-green-500/10 border-green-500/50 text-green-400"
-                : "bg-red-500/10 border-red-500/50 text-red-400"
-            }`}>
+            <div
+              className={`mb-4 p-3 rounded-lg text-sm border ${
+                error.includes("successful")
+                  ? "bg-green-500/10 border-green-500/50 text-green-400"
+                  : "bg-red-500/10 border-red-500/50 text-red-400"
+              }`}
+            >
               {error}
             </div>
           )}
@@ -205,7 +218,11 @@ export default function AuthPages({ initialMode = "login" }) {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-3 text-slate-400 hover:text-white transition"
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
                 </button>
               </div>
             </div>
@@ -232,7 +249,11 @@ export default function AuthPages({ initialMode = "login" }) {
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     className="absolute right-3 top-3 text-slate-400 hover:text-white transition"
                   >
-                    {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    {showConfirmPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -261,7 +282,7 @@ export default function AuthPages({ initialMode = "login" }) {
           {/* GOOGLE OAUTH */}
           <div className="mb-6">
             <div className="relative h-px bg-gradient-to-r from-transparent via-slate-600 to-transparent mb-6"></div>
-            
+
             <button
               onClick={handleGoogleAuth}
               disabled={loading}
@@ -353,9 +374,16 @@ export default function AuthPages({ initialMode = "login" }) {
 
           {/* Footer */}
           <p className="text-center text-slate-400 text-xs mt-6">
-            {isSignUp
-              ? "By signing up, you agree to our Terms of Service and Privacy Policy"
-              : "Forgot your password?"}
+            {isSignUp ? (
+              "By signing up, you agree to our Terms of Service and Privacy Policy"
+            ) : (
+              <Link
+                to="/auth/forgot-password"
+                className="hover:text-teal-400 underline underline-offset-4 cursor-pointer transition"
+              >
+                Forgot your password?
+              </Link>
+            )}
           </p>
         </div>
       </div>

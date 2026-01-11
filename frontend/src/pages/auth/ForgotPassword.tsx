@@ -96,6 +96,10 @@ export default function ForgotPassword() {
     }
 
     toast.success("Password reset email sent.\nCheck your inbox");
+
+    setTimeout(() => {
+      window.location.href = "/auth/login";
+    }, 1000);
   };
 
   return (

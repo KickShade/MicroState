@@ -85,7 +85,8 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <>
-    <Toaster richColors position="top-center" /> {/* 👑 Standalone at root */}
+    <Toaster richColors position="bottom-right" theme="dark" />
+
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <BrowserRouter>
@@ -109,10 +110,7 @@ const App = () => (
                   path="/auth/reset-password"
                   element={<ResetPassword />}
                 />
-                <Route 
-                path="/auth/callback" 
-                element={<AuthCallback />} 
-                />
+                <Route path="/auth/callback" element={<AuthCallback />} />
                 <Route
                   path="/dashboard"
                   element={

@@ -11,6 +11,7 @@ import {
 } from "recharts";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
+import { toast } from "sonner";
 
 const API = import.meta.env.VITE_API_BASE_URL;
 console.log("API BASE =", API);
@@ -72,6 +73,9 @@ export default function Dashboard() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate("/");
+    toast.success("Logged out", {
+      description: "You have successfully logged out",
+    });
   };
 
   /* ---------------- ML FETCH LOOP ---------------- */
@@ -212,7 +216,9 @@ export default function Dashboard() {
             type: predLabel !== "-" ? "PREDICT" : "TICK",
             desc:
               predLabel !== "-"
-                ? `${predLabel} (${((predRes?.confidence ?? 0) * 100).toFixed(1)}%)`
+                ? `${predLabel} (${((predRes?.confidence ?? 0) * 100).toFixed(
+                    1
+                  )}%)`
                 : `Mid ${mid}`,
           },
           ...prev.slice(0, 40),
