@@ -66,11 +66,11 @@ export default function AuthPages({ initialMode = "login" }) {
             email: formData.email,
             name: formData.name,
           });
-        }
 
-        setError("Signup successful — please check your email");
-        setIsSignUp(false);
-        resetOnToggle();
+          setError("Signup successful — please check your email ✓");
+          setIsSignUp(false);
+          resetOnToggle();
+        }
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email: formData.email,
