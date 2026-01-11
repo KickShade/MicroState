@@ -1,0 +1,58 @@
+services:
+  backend-api:
+    build:
+      context: ./backend-api
+    container_name: lob-backend
+    ports:
+      - "8000:8000"
+    environment:
+      MODE: live
+      API_HOST: 0.0.0.0
+      API_PORT: 8000
+      CONFIG_PATH: /app/config/config.yaml
+      MODEL_PATH: /app/models
+    volumes:
+      - ./backend-api/models:/app/models
+      - ./backend-api/config:/app/config
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 25s
+      timeout: 5s
+      retries: 3
+
+  auth-backend:
+    build:
+      context: ./backend
+    container_name: genesis-auth
+    ports:
+      - "5050:5050"
+    environment:
+      PORT: 5050
+      MONGO_URL: mongodb://mongo:27017/genesis
+    depends_on:
+      - mongo
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: genesis-ui
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:5050
+      VITE_LOB_API: http://localhost:8000
+    depends_on:
+      - backend-api
+      - auth-backend
+
+  mongo:
+    image: mongo:5
+    restart: always
+    container_name: genesis-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:

@@ -1,0 +1,8 @@
+numpy>=1.24
+pandas>=2.0
+polars>=0.20
+sortedcontainers>=2.4
+fastapi>=0.110
+uvicorn>=0.29
+lightgbm>=4.0
+pytest>=8.0

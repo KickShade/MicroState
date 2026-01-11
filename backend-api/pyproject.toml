@@ -1,0 +1,19 @@
+[project]
+name = "lob-microstructure-analysis"
+version = "0.1.0"
+description = "Real-time market microstructure analytics system"
+requires-python = ">=3.10"
+
+dependencies = [
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "polars>=0.20",
+    "sortedcontainers>=2.4",
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
+    "lightgbm>=4.0",
+    "pytest>=8.0"
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

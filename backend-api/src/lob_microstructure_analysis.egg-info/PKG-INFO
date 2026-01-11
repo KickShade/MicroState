@@ -1,0 +1,15 @@
+Metadata-Version: 2.4
+Name: lob-microstructure-analysis
+Version: 0.1.0
+Summary: Real-time market microstructure analytics system
+Requires-Python: >=3.10
+License-File: LICENSE
+Requires-Dist: numpy>=1.24
+Requires-Dist: pandas>=2.0
+Requires-Dist: polars>=0.20
+Requires-Dist: sortedcontainers>=2.4
+Requires-Dist: fastapi>=0.110
+Requires-Dist: uvicorn>=0.29
+Requires-Dist: lightgbm>=4.0
+Requires-Dist: pytest>=8.0
+Dynamic: license-file
