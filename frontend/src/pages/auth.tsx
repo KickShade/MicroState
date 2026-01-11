@@ -52,15 +52,21 @@ export default function AuthPages({ initialMode = "login" }) {
 
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email: formData.email,
           password: formData.password,
-          options: {
-            data: { name: formData.name },
-          },
+          options: { data: { name: formData.name } },
         });
 
         if (error) throw error;
+
+        if (data.user) {
+          await supabase.from("profiles").insert({
+            id: data.user.id,
+            email: formData.email,
+            name: formData.name,
+          });
+        }
 
         setError("Signup successful — please check your email");
         setIsSignUp(false);
